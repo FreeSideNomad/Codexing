@@ -16,19 +16,21 @@ bun run lint
 bun run build
 ```
 
-## GitHub Pages deployment
+## GitHub Pages deployment (focus)
 
-A workflow is included at `.github/workflows/deploy-pages.yml`.
+This repo deploys to GitHub Pages from `.github/workflows/deploy-pages.yml`.
 
-### One-time repo settings
+### Required repository settings
 
-1. In **Settings → Pages**, set **Source** to **GitHub Actions**.
-2. Ensure your default deploy branch is `main` (or update the workflow trigger branch).
+1. **Settings → Pages → Source**: select **GitHub Actions**.
+2. Ensure deploy branch is `main` (workflow trigger is `push` to `main`).
 
-### How deployment works
+### Deployment behavior
 
-- On push to `main`, Actions installs deps with Bun and builds the app.
-- The workflow sets `VITE_BASE_PATH=/Codexing/` so assets resolve correctly on Pages.
-- It uploads `dist/` and deploys using the official Pages actions.
-
-If you rename the repository, update `VITE_BASE_PATH` in `.github/workflows/deploy-pages.yml`.
+- On every push to `main`, the workflow:
+  - installs dependencies with Bun,
+  - builds with `VITE_BASE_PATH=/<repo-name>/`,
+  - uploads `dist/`,
+  - deploys with `actions/deploy-pages`.
+- The workflow also supports manual runs (`workflow_dispatch`) but only deploys when the ref is `main`.
+- Base path is dynamic from repo name, so renaming the repo does not require workflow edits.
