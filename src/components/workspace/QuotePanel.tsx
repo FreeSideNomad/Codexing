@@ -129,7 +129,7 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
           {role === 'client' && (status === 'Sent' || status === 'Negotiating') && (
             <div className="space-y-3">
               <Button
-                className="w-full bg-success text-white hover:bg-green-600"
+                className="w-full bg-success text-white hover:bg-success/80"
                 onClick={handleAcceptQuote}
                 disabled={acceptingQuote}
               >
@@ -200,7 +200,7 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
 
               {status === 'DepositPaid' && (
                 <Button
-                  className="w-full bg-success text-white hover:bg-green-600"
+                  className="w-full bg-success text-white hover:bg-success/80"
                   onClick={handleMarkConfirmed}
                 >
                   Mark as Confirmed
