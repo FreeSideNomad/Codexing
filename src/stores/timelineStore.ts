@@ -27,6 +27,10 @@ export const useTimelineStore = create<TimelineState>()(
       getEventsForQuote: (quoteId) =>
         get().events.filter((e) => e.quoteId === quoteId),
     }),
-    { name: 'vi-timeline' },
+    {
+      name: 'vi-timeline',
+      version: 2,
+      migrate: () => ({ events: [...demoTimeline] }),
+    },
   ),
 )

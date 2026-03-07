@@ -50,7 +50,7 @@ export function TermsPage() {
   }
 
   return (
-    <div className="space-y-6 pb-12 animate-fade-in">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-6 pb-12 animate-fade-in">
       {/* Back link */}
       <div>
         <Link

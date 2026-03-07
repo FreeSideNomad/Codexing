@@ -39,6 +39,10 @@ export const useChatStore = create<ChatState>()(
           ),
         })),
     }),
-    { name: 'vi-chat' },
+    {
+      name: 'vi-chat',
+      version: 2,
+      migrate: () => ({ messages: [...demoMessages] }),
+    },
   ),
 )

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { ChevronDown, ChevronUp, Send, MessageSquare } from 'lucide-react'
 import { useChatStore } from '@/stores/chatStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -15,13 +15,17 @@ export function ChatPanel({ quoteId }: ChatPanelProps) {
   const [inputText, setInputText] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const messages = useChatStore((s) => s.getMessagesForQuote(quoteId))
+  const allMessages = useChatStore((s) => s.messages)
   const sendMessage = useChatStore((s) => s.sendMessage)
   const currentUser = useAuthStore((s) => s.currentUser)
 
-  // Sort messages by timestamp ascending
-  const sortedMessages = [...messages].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+  // Filter and sort messages for this quote
+  const sortedMessages = useMemo(
+    () =>
+      allMessages
+        .filter((m) => m.quoteId === quoteId)
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
+    [allMessages, quoteId],
   )
 
   // Auto-scroll to bottom when new messages arrive
@@ -63,9 +67,9 @@ export function ChatPanel({ quoteId }: ChatPanelProps) {
           <span className="text-sm font-semibold text-text-primary">
             Project Chat
           </span>
-          {messages.length > 0 && (
+          {sortedMessages.length > 0 && (
             <Badge variant="accent" className="text-[10px]">
-              {messages.length}
+              {sortedMessages.length}
             </Badge>
           )}
         </div>

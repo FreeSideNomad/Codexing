@@ -89,6 +89,18 @@ export const useRequestStore = create<RequestState>()(
           requests: s.requests.map((r) => (r.id === requestId ? { ...r, status } : r)),
         })),
     }),
-    { name: 'vi-requests' },
+    {
+      name: 'vi-requests',
+      version: 2,
+      migrate: () => ({
+        requests: [],
+        draftShootType: '',
+        draftStartDate: '',
+        draftEndDate: '',
+        draftLocation: '',
+        draftNotes: '',
+        draftItems: [],
+      }),
+    },
   ),
 )

@@ -128,6 +128,13 @@ export const useQuoteStore = create<QuoteState>()(
       },
       getDepositAmount: (quoteId) => get().getTotal(quoteId) * 0.3,
     }),
-    { name: 'vi-quotes' },
+    {
+      name: 'vi-quotes',
+      version: 2,
+      migrate: () => ({
+        quotes: [demoQuote],
+        activeQuoteId: null,
+      }),
+    },
   ),
 )

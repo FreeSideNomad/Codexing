@@ -20,6 +20,10 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ isLoggedIn: false, currentUser: null }),
       switchRole: (role) => set({ currentUser: users[role] }),
     }),
-    { name: 'vi-auth' },
+    {
+      name: 'vi-auth',
+      version: 2,
+      migrate: () => ({ isLoggedIn: false, currentUser: null }),
+    },
   ),
 )
