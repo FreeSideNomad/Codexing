@@ -1,18 +1,23 @@
-import type { HTMLAttributes } from 'react'
+import { type HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('rounded-xl border border-zinc-200 bg-white shadow-sm', className)} {...props} />
+  return (
+    <div
+      className={cn('rounded-xl border border-border-subtle bg-surface-raised', className)}
+      {...props}
+    />
+  )
 }
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('border-b border-zinc-100 p-4', className)} {...props} />
+  return <div className={cn('px-6 py-4 border-b border-border-subtle', className)} {...props} />
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('text-base font-semibold text-zinc-900', className)} {...props} />
+  return <h3 className={cn('text-lg font-semibold text-text-primary', className)} {...props} />
 }
 
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('p-4', className)} {...props} />
+  return <div className={cn('px-6 py-4', className)} {...props} />
 }
