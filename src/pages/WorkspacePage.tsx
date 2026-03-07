@@ -5,6 +5,7 @@ import { StatusBar } from '@/components/workspace/StatusBar'
 import { KitPanel } from '@/components/workspace/KitPanel'
 import { QuotePanel } from '@/components/workspace/QuotePanel'
 import { RevisionHistory } from '@/components/workspace/RevisionHistory'
+import { ChatPanel } from '@/components/workspace/ChatPanel'
 
 export function WorkspacePage() {
   const { quoteId } = useParams<{ quoteId: string }>()
@@ -69,10 +70,8 @@ export function WorkspacePage() {
         </div>
       </div>
 
-      {/* Placeholder for ChatPanel (Task 11) */}
-      <div className="rounded-xl border border-border-subtle border-dashed bg-surface-raised/50 p-8 text-center">
-        <p className="text-text-muted text-sm">Chat panel will appear here</p>
-      </div>
+      {/* Chat panel */}
+      <ChatPanel quoteId={quoteId} />
     </div>
   )
 }
