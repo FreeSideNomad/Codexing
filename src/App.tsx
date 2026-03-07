@@ -7,6 +7,7 @@ import { OrdersPage } from '@/pages/OrdersPage'
 import { ReorderPage } from '@/pages/ReorderPage'
 import { WorkspacePage } from '@/pages/WorkspacePage'
 import { TermsPage } from '@/pages/TermsPage'
+import { PaymentPage } from '@/pages/PaymentPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="orders/:id/reorder" element={<ReorderPage />} />
         <Route path="workspace/:quoteId" element={<WorkspacePage />} />
         <Route path="workspace/:quoteId/terms" element={<TermsPage />} />
+        <Route path="workspace/:quoteId/payment" element={<PaymentPage />} />
       </Route>
     </Routes>
   )
