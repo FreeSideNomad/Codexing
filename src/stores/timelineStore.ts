@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { TimelineEvent } from '@/types'
+import { demoTimeline } from '@/data/demo'
 
 interface TimelineState {
   events: TimelineEvent[]
@@ -11,7 +12,7 @@ interface TimelineState {
 export const useTimelineStore = create<TimelineState>()(
   persist(
     (set, get) => ({
-      events: [],
+      events: [...demoTimeline],
       addEvent: (quoteId, label, actor, description) => {
         const event: TimelineEvent = {
           id: `evt-${Date.now()}`,

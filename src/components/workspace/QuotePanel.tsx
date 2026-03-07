@@ -26,6 +26,8 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
 
   const [discountInput, setDiscountInput] = useState('')
   const [deliveryFeeInput, setDeliveryFeeInput] = useState('')
+  const [sendingToClient, setSendingToClient] = useState(false)
+  const [acceptingQuote, setAcceptingQuote] = useState(false)
 
   if (!quote || !currentUser) return null
 
@@ -34,9 +36,13 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
 
   // Client actions
   function handleAcceptQuote() {
-    setStatus(quoteId, 'Accepted')
-    addRevision(quoteId, currentUser!.name, 'Quote accepted by client')
-    addEvent(quoteId, 'Quote Accepted', currentUser!.name, 'Client accepted the quote')
+    setAcceptingQuote(true)
+    setTimeout(() => {
+      setStatus(quoteId, 'Accepted')
+      addRevision(quoteId, currentUser!.name, 'Quote accepted by client')
+      addEvent(quoteId, 'Quote Accepted', currentUser!.name, 'Client accepted the quote')
+      setAcceptingQuote(false)
+    }, 500)
   }
 
   function handleRequestChanges() {
@@ -54,9 +60,13 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
 
   // Staff actions
   function handleSendToClient() {
-    setStatus(quoteId, 'Sent')
-    addRevision(quoteId, currentUser!.name, 'Quote sent to client')
-    addEvent(quoteId, 'Quote Sent', currentUser!.name, 'Quote was sent to the client for review')
+    setSendingToClient(true)
+    setTimeout(() => {
+      setStatus(quoteId, 'Sent')
+      addRevision(quoteId, currentUser!.name, 'Quote sent to client')
+      addEvent(quoteId, 'Quote Sent', currentUser!.name, 'Quote was sent to the client for review')
+      setSendingToClient(false)
+    }, 500)
   }
 
   function handleMarkConfirmed() {
@@ -121,8 +131,19 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
               <Button
                 className="w-full bg-success text-white hover:bg-green-600"
                 onClick={handleAcceptQuote}
+                disabled={acceptingQuote}
               >
-                Accept Quote
+                {acceptingQuote ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Accepting...
+                  </span>
+                ) : (
+                  'Accept Quote'
+                )}
               </Button>
               <Button
                 variant="outline"
@@ -162,8 +183,18 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
           {role === 'staff' && (
             <div className="space-y-4">
               {status === 'Draft' && (
-                <Button className="w-full" onClick={handleSendToClient}>
-                  Send to Client
+                <Button className="w-full" onClick={handleSendToClient} disabled={sendingToClient}>
+                  {sendingToClient ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Sending...
+                    </span>
+                  ) : (
+                    'Send to Client'
+                  )}
                 </Button>
               )}
 

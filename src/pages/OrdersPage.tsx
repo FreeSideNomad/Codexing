@@ -7,7 +7,7 @@ export function OrdersPage() {
   const pastOrders = useCatalogStore((s) => s.pastOrders)
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       <Link
         to="/"
         className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"

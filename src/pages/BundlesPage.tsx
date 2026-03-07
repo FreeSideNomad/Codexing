@@ -17,7 +17,7 @@ export function BundlesPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
       {/* Back link — only shown when browsing (detail has its own back) */}
       {!selectedBundle && (
         <Link

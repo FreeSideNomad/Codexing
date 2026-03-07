@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Package } from 'lucide-react'
 import { useQuoteStore } from '@/stores/quoteStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useCatalogStore } from '@/stores/catalogStore'
@@ -127,7 +128,12 @@ export function KitPanel({ quoteId }: KitPanelProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         {categories.length === 0 && (
-          <p className="text-text-muted text-sm py-4 text-center">No items in this quote yet.</p>
+          <div className="flex flex-col items-center justify-center py-10 space-y-3">
+            <Package className="h-10 w-10 text-text-muted" />
+            <p className="text-text-muted text-sm text-center">
+              No items in kit yet. Add equipment to get started.
+            </p>
+          </div>
         )}
 
         {categories.map((category) => {

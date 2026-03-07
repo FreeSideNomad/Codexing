@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Quote, QuoteLineItem, QuoteStatus, Revision, KitItem } from '@/types'
+import { demoQuote } from '@/data/demo'
 
 interface QuoteState {
   quotes: Quote[]
@@ -24,7 +25,7 @@ interface QuoteState {
 export const useQuoteStore = create<QuoteState>()(
   persist(
     (set, get) => ({
-      quotes: [],
+      quotes: [demoQuote],
       activeQuoteId: null,
       setActiveQuote: (id) => set({ activeQuoteId: id }),
       getActiveQuote: () => {

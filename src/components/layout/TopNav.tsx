@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router'
-import { Clapperboard } from 'lucide-react'
+import { Clapperboard, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { RoleSwitcher } from './RoleSwitcher'
 
@@ -10,6 +11,8 @@ const navItems = [
 ]
 
 export function TopNav() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   return (
     <header className="bg-surface-raised border-b border-border-subtle">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -22,7 +25,7 @@ export function TopNav() {
           </span>
         </div>
 
-        {/* Nav Links */}
+        {/* Nav Links — desktop */}
         <nav className="hidden items-center gap-1 sm:flex">
           {navItems.map((item) => (
             <NavLink
@@ -43,9 +46,43 @@ export function TopNav() {
           ))}
         </nav>
 
-        {/* Role Switcher */}
-        <RoleSwitcher />
+        {/* Right side: Role Switcher + Mobile menu button */}
+        <div className="flex items-center gap-2">
+          <RoleSwitcher />
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="sm:hidden p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile dropdown menu */}
+      {mobileMenuOpen && (
+        <nav className="sm:hidden border-t border-border-subtle bg-surface-raised px-4 py-2 space-y-1">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                cn(
+                  'block px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                  isActive
+                    ? 'text-accent bg-surface-overlay'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-surface-overlay',
+                )
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+      )}
     </header>
   )
 }

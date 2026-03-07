@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { ChatMessage, UserRole } from '@/types'
+import { demoMessages } from '@/data/demo'
 
 interface ChatState {
   messages: ChatMessage[]
@@ -16,7 +17,7 @@ interface ChatState {
 export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
-      messages: [],
+      messages: [...demoMessages],
       sendMessage: (quoteId, text, sender) => {
         const message: ChatMessage = {
           id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,

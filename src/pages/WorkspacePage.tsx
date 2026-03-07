@@ -36,7 +36,7 @@ export function WorkspacePage() {
   }
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-12 animate-fade-in">
       {/* Top: Back link + heading */}
       <div>
         <Link

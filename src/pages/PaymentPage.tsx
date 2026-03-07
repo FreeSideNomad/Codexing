@@ -64,7 +64,7 @@ export function PaymentPage() {
   }
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-12 animate-fade-in">
       {/* Back link */}
       <div>
         <Link
