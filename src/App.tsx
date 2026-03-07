@@ -1,5 +1,21 @@
+import { Routes, Route } from 'react-router'
+import { AppShell } from '@/components/layout/AppShell'
+import { LandingPage } from '@/pages/LandingPage'
+import { LoginPage } from '@/pages/LoginPage'
+import { useAuthStore } from '@/stores/authStore'
+
 export default function App() {
-  return <div className="min-h-screen bg-zinc-900 text-white flex items-center justify-center">
-    <h1 className="text-2xl">Visual Impact SA — Rebuilding...</h1>
-  </div>
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn)
+
+  if (!isLoggedIn) {
+    return <LoginPage />
+  }
+
+  return (
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route index element={<LandingPage />} />
+      </Route>
+    </Routes>
+  )
 }
