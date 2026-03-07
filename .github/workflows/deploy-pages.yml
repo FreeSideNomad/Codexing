@@ -38,6 +38,9 @@ jobs:
       - name: Disable Jekyll processing for Pages
         run: touch dist/.nojekyll
 
+      - name: SPA routing fallback for GitHub Pages
+        run: cp dist/index.html dist/404.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

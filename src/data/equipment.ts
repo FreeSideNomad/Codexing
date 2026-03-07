@@ -12,7 +12,7 @@ export const equipment: KitItem[] = [
     dailyRate: 6500,
     replacementValue: 325000,
     condition: 'Excellent',
-    imageUrl: 'https://images.unsplash.com/photo-1585587402577-21dc0c1c5480?w=400',
+    imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400',
     description: 'Large-format cinema camera with ALEV III sensor. Ideal for narrative, documentary, and high-end commercial work.',
   },
   {
@@ -66,7 +66,7 @@ export const equipment: KitItem[] = [
     dailyRate: 3200,
     replacementValue: 160000,
     condition: 'New',
-    imageUrl: 'https://images.unsplash.com/photo-1606986628253-e3e5977a4e23?w=400',
+    imageUrl: 'https://images.unsplash.com/photo-1589872307379-0ffdf9829123?w=400',
     description: 'Complete compact prime cinema set with interchangeable mount, uniform 95mm front diameter.',
   },
   {
@@ -107,7 +107,7 @@ export const equipment: KitItem[] = [
     dailyRate: 650,
     replacementValue: 26000,
     condition: 'Excellent',
-    imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400',
+    imageUrl: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400',
     description: '6-input/4-track field recorder with Kashmir preamps, 32-bit float recording, and USB audio interface.',
   },
 
@@ -165,7 +165,7 @@ export const equipment: KitItem[] = [
     dailyRate: 1200,
     replacementValue: 60000,
     condition: 'Excellent',
-    imageUrl: 'https://images.unsplash.com/photo-1598743400863-0038e1f8e7ae?w=400',
+    imageUrl: 'https://images.unsplash.com/photo-1626544827763-d516dce335e2?w=400',
     description: '4-axis cinema gimbal with built-in LiDAR focus, full-frame stabilisation, and wireless video transmission.',
   },
 ]
