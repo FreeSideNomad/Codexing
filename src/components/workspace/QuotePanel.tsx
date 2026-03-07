@@ -59,6 +59,12 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
     addEvent(quoteId, 'Quote Sent', currentUser!.name, 'Quote was sent to the client for review')
   }
 
+  function handleMarkConfirmed() {
+    setStatus(quoteId, 'Confirmed')
+    addRevision(quoteId, currentUser!.name, 'Booking confirmed by staff')
+    addEvent(quoteId, 'Booking Confirmed', currentUser!.name, 'Staff confirmed the booking after deposit was received')
+  }
+
   function handleApplyDiscount() {
     const amount = parseFloat(discountInput)
     if (isNaN(amount) || amount < 0) return
@@ -158,6 +164,15 @@ export function QuotePanel({ quoteId }: QuotePanelProps) {
               {status === 'Draft' && (
                 <Button className="w-full" onClick={handleSendToClient}>
                   Send to Client
+                </Button>
+              )}
+
+              {status === 'DepositPaid' && (
+                <Button
+                  className="w-full bg-success text-white hover:bg-green-600"
+                  onClick={handleMarkConfirmed}
+                >
+                  Mark as Confirmed
                 </Button>
               )}
 

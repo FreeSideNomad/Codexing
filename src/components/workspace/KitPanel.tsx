@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuoteStore } from '@/stores/quoteStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useCatalogStore } from '@/stores/catalogStore'
@@ -5,6 +6,7 @@ import { useChatStore } from '@/stores/chatStore'
 import { PriceDisplay, formatZAR } from '@/components/shared/PriceDisplay'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Select } from '@/components/ui/select'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import type { QuoteLineItem, EquipmentCategory } from '@/types'
 
@@ -24,9 +26,15 @@ const categoryVariant: Record<EquipmentCategory, 'default' | 'accent' | 'success
 export function KitPanel({ quoteId }: KitPanelProps) {
   const quote = useQuoteStore((s) => s.quotes.find((q) => q.id === quoteId))
   const removeLineItem = useQuoteStore((s) => s.removeLineItem)
+  const addLineItem = useQuoteStore((s) => s.addLineItem)
+  const updateLineItem = useQuoteStore((s) => s.updateLineItem)
   const currentUser = useAuthStore((s) => s.currentUser)
+  const allEquipment = useCatalogStore((s) => s.equipment)
   const getEquipmentById = useCatalogStore((s) => s.getEquipmentById)
   const sendMessage = useChatStore((s) => s.sendMessage)
+
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState('')
+  const [editingRates, setEditingRates] = useState<Record<string, string>>({})
 
   if (!quote || !currentUser) return null
 
@@ -42,6 +50,17 @@ export function KitPanel({ quoteId }: KitPanelProps) {
 
   const categories = Object.keys(grouped).sort()
 
+  // Equipment available for adding (not already in the quote)
+  const existingItemIds = new Set(quote.items.map((i) => i.kitItemId))
+  const availableEquipment = allEquipment.filter((e) => !existingItemIds.has(e.id))
+  const equipmentOptions = availableEquipment.map((e) => ({
+    value: e.id,
+    label: `${e.name} — ${formatZAR(e.dailyRate)}/day`,
+  }))
+
+  // Get default days from first line item or default to 1
+  const defaultDays = quote.items.length > 0 ? quote.items[0].days : 1
+
   function handleRequestChange(item: QuoteLineItem) {
     sendMessage(quoteId, `I'd like to request a change for: ${item.name}`, {
       userId: currentUser!.id,
@@ -52,6 +71,48 @@ export function KitPanel({ quoteId }: KitPanelProps) {
 
   function handleRemove(kitItemId: string) {
     removeLineItem(quoteId, kitItemId)
+  }
+
+  function handleAddEquipment() {
+    if (!selectedEquipmentId) return
+    const equipment = getEquipmentById(selectedEquipmentId)
+    if (!equipment) return
+
+    const lineItem: QuoteLineItem = {
+      kitItemId: equipment.id,
+      name: equipment.name,
+      category: equipment.category,
+      dailyRate: equipment.dailyRate,
+      quantity: 1,
+      days: defaultDays,
+    }
+
+    addLineItem(quoteId, lineItem)
+    setSelectedEquipmentId('')
+  }
+
+  function handleRateEdit(kitItemId: string, value: string) {
+    setEditingRates((prev) => ({ ...prev, [kitItemId]: value }))
+  }
+
+  function handleRateCommit(kitItemId: string) {
+    const value = editingRates[kitItemId]
+    if (value === undefined) return
+    const numValue = parseFloat(value)
+    if (!isNaN(numValue) && numValue >= 0) {
+      updateLineItem(quoteId, kitItemId, { dailyRate: numValue })
+    }
+    setEditingRates((prev) => {
+      const next = { ...prev }
+      delete next[kitItemId]
+      return next
+    })
+  }
+
+  function handleRateKeyDown(e: React.KeyboardEvent, kitItemId: string) {
+    if (e.key === 'Enter') {
+      handleRateCommit(kitItemId)
+    }
   }
 
   return (
@@ -88,6 +149,7 @@ export function KitPanel({ quoteId }: KitPanelProps) {
                 {items.map((item) => {
                   const lineTotal = item.dailyRate * item.quantity * item.days
                   const catalogItem = getEquipmentById(item.kitItemId)
+                  const isEditingRate = editingRates[item.kitItemId] !== undefined
 
                   return (
                     <div
@@ -113,9 +175,40 @@ export function KitPanel({ quoteId }: KitPanelProps) {
                             {catalogItem.brand} {catalogItem.model}
                           </p>
                         )}
-                        <p className="text-text-secondary text-xs mt-1">
-                          {formatZAR(item.dailyRate)} x {item.quantity} x {item.days} day{item.days !== 1 ? 's' : ''}
-                        </p>
+                        <div className="text-text-secondary text-xs mt-1 flex items-center gap-1">
+                          {role === 'staff' ? (
+                            <>
+                              <span>R</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="50"
+                                className="w-20 rounded border border-border-subtle bg-surface-overlay px-1.5 py-0.5 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-accent/50"
+                                value={
+                                  isEditingRate
+                                    ? editingRates[item.kitItemId]
+                                    : item.dailyRate
+                                }
+                                onChange={(e) => handleRateEdit(item.kitItemId, e.target.value)}
+                                onFocus={() => {
+                                  if (!isEditingRate) {
+                                    setEditingRates((prev) => ({
+                                      ...prev,
+                                      [item.kitItemId]: String(item.dailyRate),
+                                    }))
+                                  }
+                                }}
+                                onBlur={() => handleRateCommit(item.kitItemId)}
+                                onKeyDown={(e) => handleRateKeyDown(e, item.kitItemId)}
+                              />
+                              <span>x {item.quantity} x {item.days} day{item.days !== 1 ? 's' : ''}</span>
+                            </>
+                          ) : (
+                            <span>
+                              {formatZAR(item.dailyRate)} x {item.quantity} x {item.days} day{item.days !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       {/* Line total + action */}
@@ -154,6 +247,32 @@ export function KitPanel({ quoteId }: KitPanelProps) {
             <p className="text-sm text-text-secondary">
               Total: {quote.items.length} item{quote.items.length !== 1 ? 's' : ''} in kit
             </p>
+          </div>
+        )}
+
+        {/* Staff: Add Equipment section */}
+        {role === 'staff' && (
+          <div className="pt-3 border-t border-border-subtle">
+            <p className="text-sm font-medium text-text-secondary mb-2">Add Equipment</p>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Select
+                  options={equipmentOptions}
+                  value={selectedEquipmentId}
+                  onChange={(e) => setSelectedEquipmentId(e.target.value)}
+                />
+              </div>
+              <Button
+                size="sm"
+                disabled={!selectedEquipmentId}
+                onClick={handleAddEquipment}
+              >
+                Add
+              </Button>
+            </div>
+            {availableEquipment.length === 0 && (
+              <p className="text-text-muted text-xs mt-2">All equipment has been added.</p>
+            )}
           </div>
         )}
       </CardContent>

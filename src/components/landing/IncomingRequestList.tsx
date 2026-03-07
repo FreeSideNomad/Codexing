@@ -1,4 +1,8 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useRequestStore } from '@/stores/requestStore'
+import { useQuoteStore } from '@/stores/quoteStore'
+import { useTimelineStore } from '@/stores/timelineStore'
 import { users } from '@/data/users'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,6 +37,14 @@ function formatDateRange(start: string, end: string): string {
   return `${startDay} ${startMonth} - ${endDay} ${month} ${year}`
 }
 
+function calculateDays(start: string, end: string): number {
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+  const diffMs = endDate.getTime() - startDate.getTime()
+  const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24)) + 1 // inclusive of start and end
+  return Math.max(days, 1)
+}
+
 function getClientInfo(clientId: string) {
   const clientUser = users.client
   if (clientUser.id === clientId) {
@@ -43,21 +55,82 @@ function getClientInfo(clientId: string) {
 
 export function IncomingRequestList() {
   const requests = useRequestStore((s) => s.requests)
+  const updateRequestStatus = useRequestStore((s) => s.updateRequestStatus)
+  const createQuote = useQuoteStore((s) => s.createQuote)
+  const addEvent = useTimelineStore((s) => s.addEvent)
+  const navigate = useNavigate()
+
+  const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('all')
+
+  // Sort by createdAt descending (most recent first) and filter by status
+  const filteredRequests = requests
+    .filter((r) => statusFilter === 'all' || r.status === statusFilter)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+  function handlePrepareKit(requestId: string) {
+    const request = requests.find((r) => r.id === requestId)
+    if (!request) return
+
+    const days = calculateDays(request.dates.start, request.dates.end)
+    const items = request.items ?? []
+
+    const quoteId = createQuote(request.id, items, days)
+    updateRequestStatus(request.id, 'quoted')
+    addEvent(quoteId, 'Quote Created', 'Staff', `Quote created from request for ${request.shootType} shoot`)
+
+    navigate(`/workspace/${quoteId}`)
+  }
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
         <h2 className="text-2xl font-semibold text-text-primary">Incoming Requests</h2>
-        <Badge variant={requests.length > 0 ? 'accent' : 'muted'}>{requests.length}</Badge>
+        <Badge variant={filteredRequests.length > 0 ? 'accent' : 'muted'}>{filteredRequests.length}</Badge>
       </div>
 
-      {requests.length === 0 ? (
+      {/* Status filter */}
+      <div className="flex gap-2 mb-4">
+        <Button
+          size="sm"
+          variant={statusFilter === 'all' ? 'default' : 'outline'}
+          onClick={() => setStatusFilter('all')}
+        >
+          All
+        </Button>
+        <Button
+          size="sm"
+          variant={statusFilter === 'pending' ? 'default' : 'outline'}
+          onClick={() => setStatusFilter('pending')}
+        >
+          Pending
+        </Button>
+        <Button
+          size="sm"
+          variant={statusFilter === 'in-progress' ? 'default' : 'outline'}
+          onClick={() => setStatusFilter('in-progress')}
+        >
+          In Progress
+        </Button>
+        <Button
+          size="sm"
+          variant={statusFilter === 'quoted' ? 'default' : 'outline'}
+          onClick={() => setStatusFilter('quoted')}
+        >
+          Quoted
+        </Button>
+      </div>
+
+      {filteredRequests.length === 0 ? (
         <div className="flex items-center justify-center rounded-xl border border-border-subtle bg-surface-raised py-16">
-          <p className="text-text-muted text-lg">All caught up! No pending requests.</p>
+          <p className="text-text-muted text-lg">
+            {statusFilter === 'all'
+              ? 'All caught up! No pending requests.'
+              : `No ${statusLabel[statusFilter as RequestStatus]?.toLowerCase() ?? ''} requests.`}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
-          {requests.map((request) => {
+          {filteredRequests.map((request) => {
             const client = getClientInfo(request.clientId)
 
             return (
@@ -101,15 +174,16 @@ export function IncomingRequestList() {
                   </div>
 
                   <div className="flex-shrink-0">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        console.log(`Prepare kit for request ${request.id}`)
-                        window.location.href = '/workspace/new'
-                      }}
-                    >
-                      Prepare Kit
-                    </Button>
+                    {request.status === 'quoted' ? (
+                      <Badge variant="success">Quoted</Badge>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => handlePrepareKit(request.id)}
+                      >
+                        Prepare Kit
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
