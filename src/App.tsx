@@ -5,6 +5,7 @@ import { NewRequestPage } from '@/pages/NewRequestPage'
 import { BundlesPage } from '@/pages/BundlesPage'
 import { OrdersPage } from '@/pages/OrdersPage'
 import { ReorderPage } from '@/pages/ReorderPage'
+import { WorkspacePage } from '@/pages/WorkspacePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="bundles" element={<BundlesPage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="orders/:id/reorder" element={<ReorderPage />} />
+        <Route path="workspace/:quoteId" element={<WorkspacePage />} />
       </Route>
     </Routes>
   )
