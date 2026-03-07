@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router'
 import { AppShell } from '@/components/layout/AppShell'
 import { LandingPage } from '@/pages/LandingPage'
 import { NewRequestPage } from '@/pages/NewRequestPage'
+import { BundlesPage } from '@/pages/BundlesPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -17,6 +18,7 @@ export default function App() {
       <Route element={<AppShell />}>
         <Route index element={<LandingPage />} />
         <Route path="request/new" element={<NewRequestPage />} />
+        <Route path="bundles" element={<BundlesPage />} />
       </Route>
     </Routes>
   )
